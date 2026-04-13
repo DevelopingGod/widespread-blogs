@@ -72,19 +72,31 @@ export default function EditBlogPage() {
     if (content.trim().length < 200) { toast.error('Content must be at least 200 characters.'); return; }
 
     setLoading(true);
-    const { error } = await supabase.from('blogs').update({
-      title: title.trim(),
-      author_name: authorName.trim(),
-      image_url: imageUrl.trim(),
-      content: content.trim().replace(/\n/g, '<br />'),
-      category,
-    }).eq('id', id);
 
-    setLoading(false);
-    if (error) { toast.error('Failed to save: ' + error.message); return; }
+    try {
+      const res = await fetch('/api/blogs', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          title:       title.trim(),
+          author_name: authorName.trim(),
+          image_url:   imageUrl.trim(),
+          content:     content.trim().replace(/\n/g, '<br />'),
+          category,
+        }),
+      });
+      const data = await res.json();
+      setLoading(false);
+      if (!res.ok) { toast.error(data.error ?? 'Failed to save. Please try again.'); return; }
+    } catch {
+      setLoading(false);
+      toast.error('Network error — please try again.');
+      return;
+    }
 
     toast.success('Post updated successfully!');
-    router.push('/dashboard');
+    window.location.href = '/dashboard';
   };
 
   if (fetching) {

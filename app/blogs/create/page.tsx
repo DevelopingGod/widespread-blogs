@@ -72,35 +72,30 @@ export default function CreateBlogPage() {
 
     const blogId = crypto.randomUUID();
 
-    let insertError: unknown = null;
     try {
-      const timeout = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Request timed out — please try again.')), 12000)
-      );
-      const result = await Promise.race([
-        supabase.from('blogs').insert({
-          id: blogId,
-          title: title.trim(),
+      const res = await fetch('/api/blogs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id:          blogId,
+          title:       title.trim(),
           author_name: authorName.trim(),
-          image_url: imageUrl.trim(),
-          content: content.trim().replace(/\n/g, '<br />'),
+          image_url:   imageUrl.trim(),
+          content:     content.trim().replace(/\n/g, '<br />'),
           category,
-          user_id: user.id,
         }),
-        timeout,
-      ]) as { error: unknown };
-      insertError = result.error;
-    } catch (err: unknown) {
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setLoading(false);
+        toast.error(data.error ?? 'Failed to publish. Please try again.');
+        return;
+      }
+    } catch {
       setLoading(false);
-      toast.error(err instanceof Error ? err.message : 'Failed to publish. Please try again.');
-      return;
-    }
-
-    setLoading(false);
-
-    if (insertError) {
-      console.error('Blog insert error:', insertError);
-      toast.error('Failed to post: ' + (insertError as { message?: string }).message);
+      toast.error('Network error — please try again.');
       return;
     }
 
