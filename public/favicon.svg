@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Dark background with rounded corners -->
+  <rect width="64" height="64" rx="14" fill="#1B2430"/>
+  <!-- Teal glow circle -->
+  <circle cx="32" cy="32" r="28" fill="#1CD6CE" opacity="0.08"/>
+  <!-- Stylized W lettermark -->
+  <polyline
+    points="10,18 18,46 26,28 32,40 38,28 46,46 54,18"
+    fill="none"
+    stroke="#1CD6CE"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <!-- Small dot accent -->
+  <circle cx="32" cy="50" r="2.5" fill="#1CD6CE" opacity="0.5"/>
+</svg>

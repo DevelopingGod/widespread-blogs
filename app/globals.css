@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::selection {
+  color: #00587a;
+  background: #e4fbff;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #1cd6ce #f1f5f9;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #1cd6ce;
+  border-radius: 3px;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-gray-800 bg-gray-50;
+  }
+}
+
+/* ── Splash screen animations ── */
+@keyframes splashFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes splashBar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+@keyframes drawPath {
+  to { stroke-dashoffset: 0; }
+}
+.splash-logo  { animation: splashFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+.splash-text  { animation: splashFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
+.splash-bar   { animation: splashBar 2s cubic-bezier(0.4,0,0.2,1) 0.3s both; }
+.splash-path  {
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+  animation: drawPath 0.9s cubic-bezier(0.4,0,0.2,1) 0.1s forwards;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-teal text-brand-dark font-bold px-6 py-3 rounded-full hover:bg-teal-400 transition-colors duration-200 inline-flex items-center gap-2;
+  }
+
+  .btn-outline {
+    @apply border-2 border-brand-teal text-brand-teal font-bold px-6 py-3 rounded-full hover:bg-brand-teal hover:text-brand-dark transition-all duration-200 inline-flex items-center gap-2;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/20 transition-all duration-200 bg-white;
+  }
+
+  .label {
+    @apply block text-sm font-semibold text-gray-700 mb-1.5;
+  }
+}
