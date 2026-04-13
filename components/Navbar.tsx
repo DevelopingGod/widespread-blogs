@@ -9,13 +9,17 @@ import { Menu, X, PenLine, LogOut, LogIn, UserPlus, LayoutDashboard, Shield, Che
 import { Category } from '@/lib/database.types';
 import { DEFAULT_CATEGORIES } from '@/lib/categories';
 
-export default function Navbar() {
+interface NavbarProps {
+  initialCategories?: Category[];
+}
+
+export default function Navbar({ initialCategories = DEFAULT_CATEGORIES }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [blogsOpen, setBlogsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -62,13 +66,7 @@ export default function Navbar() {
   }, [supabase]);
 
   const handleLogout = () => {
-    // Clear local session state immediately — don't await the network call
-    setUser(null);
-    setIsAdmin(false);
-    // Fire signOut in the background (clears server session)
-    supabase.auth.signOut({ scope: 'local' }).catch(() => {});
-    // Redirect instantly without waiting
-    window.location.href = '/';
+    window.location.href = '/api/auth/signout';
   };
 
   const textClass = scrolled ? 'text-gray-700' : 'text-white';

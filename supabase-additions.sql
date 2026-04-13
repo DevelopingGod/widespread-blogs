@@ -44,3 +44,22 @@ INSERT INTO public.site_settings (key, value) VALUES
   ('x_url',            'https://x.com/cutecreeperyt'),
   ('newsletter_url',   '')
 ON CONFLICT (key) DO NOTHING;
+
+-- 4. Newsletter subscribers table
+CREATE TABLE IF NOT EXISTS public.subscribers (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email      TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.subscribers ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can insert their own email (for subscribing)
+CREATE POLICY "subscribers_insert_anyone"
+  ON public.subscribers FOR INSERT WITH CHECK (true);
+
+-- Only admins can read/delete subscribers
+CREATE POLICY "subscribers_admin_all"
+  ON public.subscribers FOR ALL
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());

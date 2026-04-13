@@ -5,6 +5,7 @@ import { DEFAULT_CATEGORIES } from '@/lib/categories';
 import type { Category, Blog } from '@/lib/database.types';
 import CategoryCard from '@/components/CategoryCard';
 import BlogCard from '@/components/BlogCard';
+import NewsletterForm from '@/components/NewsletterForm';
 import { PenLine, ArrowRight, Bell } from 'lucide-react';
 
 async function getData(): Promise<{ categories: Category[]; recentBlogs: Blog[] }> {
@@ -122,20 +123,7 @@ export default async function HomePage() {
           <p className="text-gray-500 mb-6">
             Our newsletter is coming soon. Drop your email and we&apos;ll notify you the moment it launches.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className="input-field flex-1"
-              disabled
-            />
-            <button
-              disabled
-              className="bg-brand-teal text-brand-dark font-bold px-6 py-3 rounded-xl opacity-60 cursor-not-allowed whitespace-nowrap"
-            >
-              Notify Me
-            </button>
-          </div>
+          <NewsletterForm />
           <p className="text-xs text-gray-400 mt-3">🚀 Newsletter launching soon. No spam, ever.</p>
         </div>
       </section>

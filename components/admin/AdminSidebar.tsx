@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { LayoutDashboard, FileText, Users, Tag, LogOut, Home, ExternalLink, Settings } from 'lucide-react';
-import { createClient } from '@/lib/supabase';
 
 const navItems = [
   { href: '/admin',            label: 'Overview',    icon: LayoutDashboard },
@@ -15,12 +14,9 @@ const navItems = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const supabase = createClient();
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut({ scope: 'local' });
-    window.location.href = '/';
+  const handleLogout = () => {
+    window.location.href = '/api/auth/signout';
   };
 
   return (

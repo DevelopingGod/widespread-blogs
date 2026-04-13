@@ -39,6 +39,9 @@ export default function CreateBlogPage() {
   }, [supabase]);
 
   useEffect(() => {
+    // Safety timeout — if Supabase hangs on cold start, unblock the page after 8s
+    const timeout = setTimeout(() => setAuthChecked(true), 8000);
+
     supabase.auth.getUser().then(async ({ data }) => {
       setUser(data.user);
       if (data.user) {
@@ -51,8 +54,11 @@ export default function CreateBlogPage() {
         setIsBanned(profile?.is_banned ?? false);
         if (profile?.name && !authorName) setAuthorName(profile.name);
       }
+      clearTimeout(timeout);
       setAuthChecked(true);
     });
+
+    return () => clearTimeout(timeout);
   }, [supabase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (e: React.FormEvent) => {
