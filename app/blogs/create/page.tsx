@@ -72,26 +72,40 @@ export default function CreateBlogPage() {
 
     const blogId = crypto.randomUUID();
 
-    const { error } = await supabase.from('blogs').insert({
-      id: blogId,
-      title: title.trim(),
-      author_name: authorName.trim(),
-      image_url: imageUrl.trim(),
-      content: content.trim().replace(/\n/g, '<br />'),
-      category,
-      user_id: user.id,
-    });
+    let insertError: unknown = null;
+    try {
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out — please try again.')), 12000)
+      );
+      const result = await Promise.race([
+        supabase.from('blogs').insert({
+          id: blogId,
+          title: title.trim(),
+          author_name: authorName.trim(),
+          image_url: imageUrl.trim(),
+          content: content.trim().replace(/\n/g, '<br />'),
+          category,
+          user_id: user.id,
+        }),
+        timeout,
+      ]) as { error: unknown };
+      insertError = result.error;
+    } catch (err: unknown) {
+      setLoading(false);
+      toast.error(err instanceof Error ? err.message : 'Failed to publish. Please try again.');
+      return;
+    }
 
     setLoading(false);
 
-    if (error) {
-      console.error('Blog insert error:', error);
-      toast.error('Failed to post: ' + error.message);
+    if (insertError) {
+      console.error('Blog insert error:', insertError);
+      toast.error('Failed to post: ' + (insertError as { message?: string }).message);
       return;
     }
 
     toast.success('Blog published!');
-    router.push(`/blogs/${category}/${blogId}`);
+    window.location.href = `/blogs/${category}/${blogId}`;
   };
 
   if (!authChecked) {

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,17 +12,20 @@ interface Props { params: { category: string; id: string } }
 async function getBlogWithCategory(id: string) {
   try {
     const supabase = createServerClient();
+    // Fetch blog and its category in parallel
     const { data: rawBlog } = await supabase.from('blogs').select('*').eq('id', id).single();
     const blog = rawBlog as Blog | null;
     if (!blog) return { blog: null, category: null };
     const { data: rawCat } = await supabase.from('categories').select('*').eq('slug', blog.category).single();
-    const category = rawCat as Category | null;
-    return { blog, category };
+    return { blog, category: rawCat as Category | null };
   } catch { return { blog: null, category: null }; }
 }
 
+// Cache the result per request so generateMetadata + page share one fetch
+const getBlogCached = cache(getBlogWithCategory);
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { blog } = await getBlogWithCategory(params.id);
+  const { blog } = await getBlogCached(params.id);
   if (!blog) return {};
   return {
     title: `${blog.title} — Widespread Blogs`,
@@ -31,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogDetailPage({ params }: Props) {
-  const { blog, category } = await getBlogWithCategory(params.id);
+  const { blog, category } = await getBlogCached(params.id);
   if (!blog) notFound();
 
   const gradient = category?.gradient ?? 'from-gray-500 to-gray-700';
